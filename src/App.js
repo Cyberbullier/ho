@@ -1,75 +1,100 @@
-import { useState } from "react";
-import Cart from "./Cart";
-import Product from "./Product";
-import "./styles.css";
+import React, { useState } from 'react';
+import axios from "axios";
+import styled from 'styled-components';
 
-// Parent containe with state and functionality to add and remove item
-export default function App() {
-  const products = [
-    {
-      id: 1,
-      name: "Xbox",
-      desc: "It is a playstation",
-      price: 300,
-      quantity: 1
-    },
-    {
-      id: 2,
-      name: "Xbox3",
-      desc: "It is a playstation",
-      price: 100,
-      quantity: 1
-    },
-    {
-      id: 3,
-      name: "Vgame",
-      desc: "It is a playstation",
-      price: 100,
-      quantity: 1
-    },
-    {
-      id: 4,
-      name: "Xbox1",
-      desc: "It is a playstation",
-      price: 200,
-      quantity: 1
-    },
-    {
-      id: 5,
-      name: "Xbox2",
-      desc: "It is a playstation",
-      price: 300,
-      quantity: 1
-    }
-  ];
-  const [cart, setCart] = useState([]);
+const Button = styled.button`
+  background-color: black;
+  color: white;
+  font-size: 20px;
+  padding: 10px 60px;
+  border-radius: 5px;
+  margin: 10px 0px;
+  cursor: pointer;
+  &:disabled {
+    color: grey;
+    opacity: 0.7;
+    cursor: default;
+  }
+`;
+const ButtonToggle = styled(Button)`
+  opacity: 0.6;
+  ${({ active }) =>
+    active &&
+    `
+    opacity: 1;
+  `}
+`;
+const ButtonGroup = styled.div`
+  display: flex;
+`;
 
-  const addProduct = (item) => {
-    var cartItem = [...cart];
-    cartItem.push(item);
-    setCart(cartItem);
+const Mushroom_tips = ['Enoki','King Oyster'];
+function App() {
+
+//endpoint use effects
+const [add_enoki_cart, setAddEnokiCart] = useState(null)
+const [remove_enoki_cart, setRemoveEnokiCart] = useState(null)
+const [add_oyster_cart, setAddOysterCart] = useState(null)
+const [remove_Oyster_cart, setRemoveOysterCart] = useState(null)
+
+const [active, setActive] = useState(Mushroom_tips[0]);
+
+function get_enoki_from_stock() {
+  axios({
+    method: "GET",
+    url:"/add-enoki",
+  })
+  .then((response) => {
+    const res =response.data
+    setAddEnokiCart(({
+      price: res.price,
+      count: res.count}))
+  }).catch((error) => {
+    if (error.response) {
+      console.log(error.response)
+      console.log(error.response.status)
+      console.log(error.response.headers)
+      }
+  })}
+
+
+
+
+
+  function add_mushroom(){
+    return (
+      <ButtonGroup>
+        {Mushroom_tips.map(type => (
+          <ButtonToggle
+            key={type}
+            active={active === type}
+            onClick={() => setActive(type)}
+          >
+            {type}
+          </ButtonToggle>
+        ))}
+      </ButtonGroup>
+    );
   };
 
-  const removeProduct = (id, e) => {
-    var cartItem = [...cart];
-    var index = cartItem.findIndex((x) => x.id === id);
-    cartItem.splice(index, 1);
-    setCart(cartItem);
-    e.preventDefault();
-  };
 
-  const getProducts = () => {
-    var itemList = products.map((item, i) => {
-      return (
-        <Product item={item} key={i} onAdd={addProduct.bind(this, item)} />
-      );
-    });
-    return itemList;
+  function remove_mushroom(){
+    return (
+      <ButtonGroup>
+        {Mushroom_tips.map(type => (
+          <ButtonToggle
+            key={type}
+            active={active === type}
+            onClick={() => setActive(type)}
+          >
+            {type}
+          </ButtonToggle>
+        ))}
+      </ButtonGroup>
+    );
   };
-  return (
-    <div>
-      {getProducts()}
-      <Cart cart={cart} removeItem={removeProduct} />
-    </div>
-  );
-}
+};
+
+
+export default App;
+
