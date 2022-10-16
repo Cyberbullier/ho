@@ -11,7 +11,11 @@ function App() {
   const [cartItems, setCartItems] = useState([]);
   const onAdd = (product) => {
 
+<<<<<<< HEAD
       axios.post('https://joestar-mushroom-farm.herokuapp.com/decrement-stock', {
+=======
+      axios.post('http://127.0.0.1:5000/decrement-stock', {
+>>>>>>> 11628b8 (fixed routing issue)
         name: product.name
       })
       .then((res) => {
