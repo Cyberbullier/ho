@@ -1,9 +1,19 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 import os
 import json
+# from flask_cors import CORS
+import flask_cors
 ######## config###########
-api = Flask(__name__)
 inventory_file_path = os.path.join(os.path.dirname(__file__), "inventory.json")
+
+
+api = Flask(__name__, static_url_path='', static_folder='../build')
+flask_cors.CORS(api) #comment this on deployment
+CONFIG = {"headers": {
+'Access-Control-Allow-Origin': '*',
+'Content-Type': 'application/json',
+}}
+# api = Flask(__name__)
 ##########################
 
 def write_json(path, json_data):
@@ -16,9 +26,22 @@ def read_json(path):
         return json.load(file_in)
 
 
-############ ENOKI ENDPOINTS########
-@api.route('/add-enoki')
-def add_enoki():
+############ API ENDPOINTS ########
+@api.route('/')
+def home():
+    response_body = {
+        "name": "Nagato",
+        "about" :"Hello! I'm a full stack developer that loves python and javascript"
+    }
+    api.logger.debug("home request")
+
+    return response_body
+
+
+@api.route('/decrement-stock', methods = ['POST'])
+# @cross_origin()
+def decrement_stock():
+    api.logger.debug("/decrement-stock")
 
     # input from form or wherever your new JSON is coming from...
     # It could also be coming from a REST API etc:
@@ -28,30 +51,36 @@ def add_enoki():
 
     # read in existing JSON
     existing_json = read_json(inventory_file_path)
-    # {"existing": "json"}
+
+    # product_name = "Enoki"
+    payload = request.get_json()
+
+    product_name = payload["name"]
 
 
     # add new JSON to existing JSON however you see fit
-    stock = existing_json["enoki"]["stock"] -  1
-    if stock <=0:
+    stock = existing_json[product_name]["stock"] -  1
+    api.logger.debug(f"current stock: {stock + 1}")
+    if stock <0:
         # dont update
         response_body = {
             "current_stock": stock,
-            "recieved": 0
+            "added": 0
         }
     else:
-        existing_json['enoki']['stock'] = stock
+        existing_json[product_name]['stock'] = stock
         response_body = {
             "current_stock": stock,
-            "recieved": 1
+            "added": 1
         }
 
     # now update datastore
     write_json(inventory_file_path, existing_json)
-    return response_body
+    return jsonify(response_body)
 
-@api.route('/remove-from-cart-enoki')
-def remove_enoki():
+@api.route('/increment-stock', methods = ['POST'])
+def increment_stock():
+    api.logger.debug("/increment-stock")
 
     # input from form or wherever your new JSON is coming from...
     # It could also be coming from a REST API etc:
@@ -61,79 +90,24 @@ def remove_enoki():
 
     # read in existing JSON
     existing_json = read_json(inventory_file_path)
-    # {"existing": "json"}
+    api.logger.debug(request)
+
+
+    payload = request.get_json()
+    product_name = payload["name"]
 
 
     # add new JSON to existing JSON however you see fit
-    stock = existing_json["enoki"]["stock"] +  1
-    existing_json['enoki']['stock'] = stock
+    stock = existing_json[product_name]["stock"] +  1
+    existing_json[product_name]['stock'] = stock
     response_body = {
         "current_stock": stock,
         "removed": 1
     }
     # now update datastore
     write_json(inventory_file_path, existing_json)
-    return response_body
+    return jsonify(response_body)
 
 
 
 
-############ OYSTER ENDPOINTS########
-
-@api.route('/add-enoki')
-def add_enoki():
-
-    # input from form or wherever your new JSON is coming from...
-    # It could also be coming from a REST API etc:
-    # input = request.form['data']
-    # {"new": "data"}
-
-
-    # read in existing JSON
-    existing_json = read_json(inventory_file_path)
-    # {"existing": "json"}
-
-
-    # add new JSON to existing JSON however you see fit
-    stock = existing_json["enoki"]["stock"] -  1
-    if stock <=0:
-        # dont update
-        response_body = {
-            "current_stock": stock,
-            "recieved": 0
-        }
-    else:
-        existing_json['enoki']['stock'] = stock
-        response_body = {
-            "current_stock": stock,
-            "recieved": 1
-        }
-
-    # now update datastore
-    write_json(inventory_file_path, existing_json)
-    return response_body
-
-@api.route('/remove-from-cart-enoki')
-def remove_enoki():
-
-    # input from form or wherever your new JSON is coming from...
-    # It could also be coming from a REST API etc:
-    # input = request.form['data']
-    # {"new": "data"}
-
-
-    # read in existing JSON
-    existing_json = read_json(inventory_file_path)
-    # {"existing": "json"}
-
-
-    # add new JSON to existing JSON however you see fit
-    stock = existing_json["enoki"]["stock"] +  1
-    existing_json['enoki']['stock'] = stock
-    response_body = {
-        "current_stock": stock,
-        "removed": 1
-    }
-    # now update datastore
-    write_json(inventory_file_path, existing_json)
-    return response_body

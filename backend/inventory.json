@@ -1,1 +1,1 @@
-{"enoki": {"upc": 100001, "name": "Enoki", "price": 2.99, "stock": 1}, "oyster": {"upc": 100002, "name": "King Oyster", "price": 1.69, "stock": 1}}
+{"Enoki": {"upc": 100001, "name": "Enoki", "price": 2.99, "stock": 74}, "King Oyster": {"upc": 100002, "name": "King Oyster", "price": 6.99, "stock": 4432}, "Shiitake": {"upc": 100002, "name": "Shiitake", "price": 10.99, "stock": 433}}
