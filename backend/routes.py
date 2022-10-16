@@ -1,14 +1,13 @@
 from flask import Flask, request, jsonify
 import os
 import json
-# from flask_cors import CORS
-import flask_cors
+# import flask_cors
 ######## config###########
 inventory_file_path = os.path.join(os.path.dirname(__file__), "inventory.json")
 
 
 api = Flask(__name__, static_url_path='', static_folder='../build')
-flask_cors.CORS(api) #comment this on deployment
+# flask_cors.CORS(api) #comment this on deployment
 CONFIG = {"headers": {
 'Access-Control-Allow-Origin': '*',
 'Content-Type': 'application/json',
