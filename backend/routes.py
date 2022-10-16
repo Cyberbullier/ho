@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 import os
 import json
 # import flask_cors
@@ -6,13 +6,12 @@ import json
 inventory_file_path = os.path.join(os.path.dirname(__file__), "inventory.json")
 
 
-app = Flask(__name__, static_url_path='', static_folder='../build')
+app = Flask(__name__, static_url_path='/', static_folder='../build')
 # flask_cors.CORS(app) #comment this on deployment
 CONFIG = {"headers": {
 'Access-Control-Allow-Origin': '*',
 'Content-Type': 'application/json',
 }}
-# app = Flask(__name__)
 ##########################
 
 def write_json(path, json_data):
@@ -26,19 +25,13 @@ def read_json(path):
 
 
 ############ app ENDPOINTS ########
-@app.route('/')
-def home():
-    response_body = {
-        "name": "Nagato",
-        "about" :"Hello! I'm a full stack developer that loves python and javascript"
-    }
-    app.logger.debug("home request")
+@app.route("/", defaults={'path':''})
+def serve(path):
+    return send_from_directory(app.static_folder,'index.html')
 
-    return response_body
 
 
 @app.route('/decrement-stock', methods = ['POST'])
-# @cross_origin()
 def decrement_stock():
     app.logger.debug("/decrement-stock")
 
