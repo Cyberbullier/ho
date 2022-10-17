@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, send_from_directory
 import os
 import json
+# Comment this out for prod
 # import flask_cors
 ######## config###########
 inventory_file_path = os.path.join(os.path.dirname(__file__), "inventory.json")
@@ -8,11 +9,8 @@ inventory_file_path = os.path.join(os.path.dirname(__file__), "inventory.json")
 
 app = Flask(__name__, static_url_path='/', static_folder='../build')
 # flask_cors.CORS(app) #comment this on deployment
-CONFIG = {"headers": {
-'Access-Control-Allow-Origin': '*',
-'Content-Type': 'application/json',
-}}
-##########################
+
+############Helpers##############
 
 def write_json(path, json_data):
     with open(path, 'w') as file_out:
@@ -35,20 +33,12 @@ def serve(path):
 def decrement_stock():
     app.logger.debug("/decrement-stock")
 
-    # input from form or wherever your new JSON is coming from...
-    # It could also be coming from a REST app etc:
-    # input = request.form['data']
-    # {"new": "data"}
-
 
     # read in existing JSON
     existing_json = read_json(inventory_file_path)
 
-    # product_name = "Enoki"
     payload = request.get_json()
-
     product_name = payload["name"]
-
 
     # add new JSON to existing JSON however you see fit
     stock = existing_json[product_name]["stock"] -  1
@@ -74,16 +64,9 @@ def decrement_stock():
 def increment_stock():
     app.logger.debug("/increment-stock")
 
-    # input from form or wherever your new JSON is coming from...
-    # It could also be coming from a REST app etc:
-    # input = request.form['data']
-    # {"new": "data"}
-
-
     # read in existing JSON
     existing_json = read_json(inventory_file_path)
     app.logger.debug(request)
-
 
     payload = request.get_json()
     product_name = payload["name"]
